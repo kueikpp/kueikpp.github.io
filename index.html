@@ -2,184 +2,157 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>角色特質測驗</title>
+  <title>角色特質測驗｜大航海五角色雷達圖</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
    body {
-  font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  margin: 0;
-  padding: 0;
-  background:
-    linear-gradient(rgba(5, 10, 25, 0.7), rgba(5, 10, 25, 0.7)),
-    url("https://upload.wikimedia.org/wikipedia/commons/5/5c/John_C._Munro_off_Hong_Kong.jpg")
-    no-repeat center center fixed;
-  background-size: cover;
-  color: #f5f5f5;
-}
+    font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+    background:
+      linear-gradient(rgba(5, 10, 25, 0.7), rgba(5, 10, 25, 0.7)),
+      url("https://upload.wikimedia.org/wikipedia/commons/5/5c/John_C._Munro_off_Hong_Kong.jpg")
+      no-repeat center center fixed;
+    background-size: cover;
+    color: #f5f5f5;
+  }
 
-header {
-  padding: 22px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  background: radial-gradient(circle at top left, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
-  backdrop-filter: blur(6px);
-}
+  header {
+    padding: 22px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    background: radial-gradient(circle at top left, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+    backdrop-filter: blur(6px);
+  }
 
-header h1 {
-  margin: 0;
-  font-size: 32px;
-  color: #ffdd66;
-}
+  header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #ffdd66;
+  }
 
-header p {
-  margin: 0;
-  font-size: 18px;
-  color: #ffdd66;
-}
+  header p {
+    margin: 0;
+    font-size: 18px;
+    color: #ffdd66;
+  }
 
-.container {
-  max-width: 1080px;
-  margin: 28px auto 60px;
-  padding: 0 24px 36px;
-}
+  .container {
+    max-width: 1080px;
+    margin: 28px auto 60px;
+    padding: 0 24px 36px;
+  }
 
-.card {
-  background: radial-gradient(circle at top left, rgba(255,255,255,0.05), rgba(2,8,22,0.95));
-  border-radius: 20px;
-  padding: 28px 24px 30px;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-}
+  .card {
+    background: radial-gradient(circle at top left, rgba(255,255,255,0.05), rgba(2,8,22,0.95));
+    border-radius: 20px;
+    padding: 28px 24px 30px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+  }
 
-.card h2 {
-  font-size: 24px;
-  color: #ffdd88;
-  margin-bottom: 16px;
-}
+  .card h2 {
+    font-size: 24px;
+    color: #ffdd88;
+    margin-bottom: 16px;
+  }
 
-.subtitle {
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: #ffdd66;
-  line-height: 1.6;
-}
+  .subtitle {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #ffdd66;
+    line-height: 1.6;
+  }
 
-.question-block {
-  margin-bottom: 22px;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed rgba(255,255,255,0.08);
-}
+  .question-block {
+    margin-bottom: 22px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed rgba(255,255,255,0.08);
+  }
 
-.question-text {
-  font-size: 20px;
-  line-height: 1.8;
-  margin-bottom: 8px;
-}
+  .question-text {
+    font-size: 20px;
+    line-height: 1.8;
+    margin-bottom: 8px;
+  }
 
-.scale {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-  font-size: 16px;
-}
+  .scale {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 16px;
+  }
 
-.scale label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.04);
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-}
+  .scale label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+  }
 
-.scale input[type="radio"] {
-  accent-color: #ffcc66;
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
+  .scale input[type="radio"] {
+    accent-color: #ffcc66;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
 
-.scale label:hover {
-  background: rgba(255,204,102,0.15);
-  border-color: rgba(255,204,102,0.35);
-}
+  .scale label:hover {
+    background: rgba(255,204,102,0.15);
+    border-color: rgba(255,204,102,0.35);
+  }
 
-.btn-area {
-  margin-top: 22px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-}
+  .btn-area {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
 
-button {
-  border: none;
-  border-radius: 999px;
-  padding: 12px 24px;
-  font-size: 18px;
-  cursor: pointer;
-  background: linear-gradient(to right, #ffcc66, #ff9966);
-  color: #1a1a1a;
-  font-weight: 700;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.5);
-  transition: all 0.2s ease;
-}
+  button {
+    border: none;
+    border-radius: 999px;
+    padding: 12px 24px;
+    font-size: 18px;
+    cursor: pointer;
+    background: linear-gradient(to right, #ffcc66, #ff9966);
+    color: #1a1a1a;
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+    transition: all 0.2s ease;
+  }
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.65);
-}
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.65);
+  }
 
-button.secondary {
-  background: transparent;
-  color: #ffddaa;
-  border: 2px solid rgba(255,221,170,0.4);
-}
+  button.secondary {
+    background: transparent;
+    color: #ffddaa;
+    border: 2px solid rgba(255,221,170,0.4);
+  }
 
-button.secondary:hover {
-  background: rgba(255,221,170,0.1);
-}
+  button.secondary:hover {
+    background: rgba(255,221,170,0.1);
+  }
 
-.note {
-  font-size: 16px;
-  opacity: 0.85;
-  margin-top: 18px;
-  color: #ffddaa;
-  line-height: 1.6;
-}
-
-#resultInner {
-  padding: 24px 20px 26px;
-}
-
-#radarChart {
-  max-height: 420px;
-}
-
-.scores {
-  margin-top: 16px;
-  font-size: 18px;
-  line-height: 2;
-}
-
-.result-hint {
-  font-size: 16px;
-  margin-top: 14px;
-  line-height: 1.9;
-  color: #ffddaa;
-}
-
-.close-btn {
-  font-size: 16px;
-  padding: 6px 14px;
-  border: 1.5px solid rgba(255,221,170,0.6);
-}
+  .note {
+    font-size: 16px;
+    opacity: 0.85;
+    margin-top: 18px;
+    color: #ffddaa;
+    line-height: 1.6;
+  }
   </style>
 </head>
 <body>
@@ -201,28 +174,6 @@ button.secondary:hover {
     <div class="btn-area">
       <button id="generateBtn">⚓ 生成我的航海雷達圖</button>
       <button type="button" class="secondary" id="resetBtn">重填問卷</button>
-    </div>
-  </div>
-</div>
-
-<div id="resultPageOverlay">
-  <div id="resultInner">
-    <h2>
-      🧭 航海雷達圖與分析
-      <button class="close-btn" id="backBtn">返回問卷</button>
-    </h2>
-    <canvas id="radarChart"></canvas>
-    <div class="scores" id="scoreText"></div>
-    <div class="result-hint">
-      ✦ 每一種角色特質，都是讓船隊真正能啟航、穿越風浪、到達目的地的重要拼圖。<br>
-      ✦ 把你的結果視為「這次任務中，你最擅長帶來的力量」，而不是分數高低的比較。
-    </div>
-    <div class="role-notes">
-      <span>船長 Captain：</span>領導、分工、決策、凝聚<br>
-      <span>航海士 Navigator：</span>分析、方法、內斂、建議<br>
-      <span>船醫 Medic：</span>關懷、協助、應變、救援<br>
-      <span>傳教士 Missionary：</span>信心、堅定、包容、同理、說服<br>
-      <span>水手 Sailor：</span>堅定、毅力、熟練、執行
     </div>
   </div>
 </div>
@@ -289,7 +240,6 @@ button.secondary:hover {
 
       const scale = document.createElement("div");
       scale.className = "scale";
-      scale.setAttribute("data-qid", q.id);
 
       for (let v = 1; v <= 5; v++) {
         const label = document.createElement("label");
@@ -339,7 +289,7 @@ button.secondary:hover {
     return avg;
   }
 
-  // 新分頁顯示雷達圖與結果（不改動任何既有中文字）
+  // 新分頁顯示雷達圖與結果
   function showResultPage(avg) {
     const labels = Object.keys(ROLE_CONFIG).map(k => ROLE_CONFIG[k].label);
     const data = Object.keys(ROLE_CONFIG).map(k => Number(avg[k].toFixed(2)));
@@ -347,7 +297,7 @@ button.secondary:hover {
 
     const scoresHtml = entries.map(
       ([role, value]) =>
-        `<div><strong>${ROLE_CONFIG[role].label}</strong>：${value.toFixed(2)}</div>`
+        `<div><strong>${ROLE_CONFIG[role].label}</strong>：${value.toFixed(2)} 分</div>`
     ).join("");
 
     const labelsJson = JSON.stringify(labels);
@@ -360,7 +310,7 @@ button.secondary:hover {
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<title>Radar Result</title>
+<title>航海雷達圖與分析</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   body {
@@ -372,37 +322,106 @@ button.secondary:hover {
     text-align: center;
   }
   h1 {
-    margin: 0 0 12px;
+    margin: 0 0 16px;
     font-size: 26px;
     color: #ffdd66;
   }
   #radarChart {
     max-width: 520px;
     max-height: 520px;
-    margin: 0 auto 16px;
+    margin: 0 auto 20px;
   }
   .scores {
     font-size: 18px;
     line-height: 1.9;
-    margin: 0 auto 12px;
+    margin: 0 auto 14px;
     display: inline-block;
     text-align: left;
     color: #ffddaa;
   }
   .notes {
-    font-size: 14px;
-    line-height: 1.8;
-    margin: 10px auto 0;
+    font-size: 16px;
+    line-height: 1.9;
+    margin: 12px auto 0;
     display: inline-block;
     text-align: left;
     color: #ffddaa;
     border-top: 1px dashed rgba(255,255,255,0.3);
-    padding-top: 8px;
-  }
-  .notes div {
-    margin-bottom: 2px;
+    padding-top: 10px;
   }
 </style>
 </head>
-</html>
+<body>
+<h1>🧭 航海雷達圖與分析</h1>
+<canvas id="radarChart"></canvas>
+<div class="scores">
+${scoresHtml}
+</div>
+<div class="notes">
+  船長（領導、分工、決策、凝聚）<br>
+  航海士（分析、方法、內斂、建議）<br>
+  船醫（關懷、協助、應變、救援）<br>
+  傳教士（信心、堅定、包容、同理、說服）<br>
+  水手（堅定、毅力、熟練、執行）
+</div>
+<script>
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ${labelsJson},
+      datasets: [{
+        label: '我的航海特質強度（1～5分）',
+        data: ${dataJson},
+        fill: true,
+        backgroundColor: 'rgba(255, 204, 102, 0.20)',
+        borderColor: 'rgba(255, 204, 102, 1)',
+        pointBackgroundColor: '#ffcc66',
+        pointRadius: 3,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          suggestedMin: 1,
+          suggestedMax: 5,
+          ticks: {
+            stepSize: 1,
+            backdropColor: 'transparent',
+            color: 'rgba(245,245,245,0.9)',
+            font: { size: 10 }
+          },
+          grid: { color: 'rgba(255,255,255,0.25)' },
+          angleLines: { color: 'rgba(255,255,255,0.25)' },
+          pointLabels: {
+            color: '#ffdd99',
+            font: { size: 13 }
+          }
+        }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+</script>
+</body>
+</html>`);
+    newWin.document.close();
+  }
 
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    const avg = calculateScores();
+    if (!avg) return;
+    showResultPage(avg);
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    renderQuestions();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+
+</body>
+</html>

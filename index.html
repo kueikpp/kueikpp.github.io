@@ -193,7 +193,8 @@ button.secondary:hover {
   <div class="card">
     <h2>📝 問卷作答區</h2>
     <div class="subtitle">
-      （1＝非常不同意，5＝非常同意）每題請勾選一個數字。完成後按下「生成雷達圖」查看結果。
+      請以真實感受作答，覺察自己的特質，每題請勾選一個數字（1＝非常不同意，5＝非常同意）。
+      完成後按下「生成雷達圖」查看結果。
     </div>
 
     <div id="questionsContainer"></div>
@@ -203,9 +204,7 @@ button.secondary:hover {
       <button type="button" class="secondary" id="resetBtn">重填問卷</button>
     </div>
 
-    <div class="note">
-      本測驗僅作為課程分工與自我了解參考，沒有最好或最差的角色，請以真實感受作答，也欣賞彼此不同的力量。
-    </div>
+    
   </div>
 </div>
 
@@ -215,12 +214,20 @@ button.secondary:hover {
       🧭 航海雷達圖與分析
       <button class="close-btn" id="backBtn">返回問卷</button>
     </h2>
-    <canvas id="radarChart"></canvas>
+        <canvas id="radarChart"></canvas>
     <div class="scores" id="scoreText"></div>
     <div class="result-hint">
       ✦ 每一種角色特質，都是讓船隊真正能啟航、穿越風浪、到達目的地的重要拼圖。<br>
       ✦ 把你的結果視為「這次任務中，你最擅長帶來的力量」，而不是分數高低的比較。
     </div>
+    <div class="role-notes">
+      <span>船長 Captain：</span>領導、分工、決策、凝聚<br>
+      <span>航海士 Navigator：</span>分析、方法、內斂、建議<br>
+      <span>船醫 Medic：</span>關懷、協助、應變、救援<br>
+      <span>傳教士 Missionary：</span>信心、堅定、包容、同理、說服<br>
+      <span>水手 Sailor：</span>堅定、毅力、熟練、執行
+    </div>
+
   </div>
 </div>
 
@@ -449,4 +456,5 @@ button.secondary:hover {
 
 </body>
 </html>
+
 

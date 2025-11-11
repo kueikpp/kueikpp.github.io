@@ -174,8 +174,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(circle at top, rgba(3,10,25,0.9), rgba(0,0,0,0.98));
+      background: radial-gradient(circle at top, rgba(3,10,25,0.9), rgba(0,0,0,0.98));
       z-index: 999;
       padding: 24px 12px 32px;
       overflow-y: auto;
@@ -288,7 +287,7 @@
     <div class="scores" id="scoreText"></div>
     <div class="result-hint">
       ✦ 每一種角色特質，都是讓船隊真正能啟航、穿越風浪、到達目的地的重要拼圖。<br>
-      ✦ 請把你的結果當成「這次任務中，你最擅長帶來的力量」，而不是分數高低的比較。
+      ✦ 把你的結果視為「這次任務中，你最擅長帶來的力量」，而不是分數高低的比較。
     </div>
   </div>
 </div>
@@ -302,42 +301,37 @@
     sailor:    { label: "水手" }
   };
 
-  // 每角色 4 正向 + 1 反向
+  // 20 題：每角色 4 題，皆為正向敘述
   const QUESTIONS = [
     // 船長
-    { id: "q1",  text: "當小組出現不同意見時，我能協助大家朝同一方向前進。", role: "captain", reverse: false },
-    { id: "q2",  text: "我會主動追蹤進度，提醒大家一起完成任務。", role: "captain", reverse: false },
-    { id: "q3",  text: "遇到突發狀況時，我能冷靜下來，帶動大家想辦法。", role: "captain", reverse: false },
-    { id: "q4",  text: "在做決定前，我會先聽聽不同成員的意見。", role: "captain", reverse: false },
-    { id: "q5r", text: "有時我比較習慣跟著團隊決定，而不太想主動提出方向。", role: "captain", reverse: true },
+    { id: "q1",  text: "當小組出現不同意見時，我能協助大家朝同一方向前進。", role: "captain" },
+    { id: "q2",  text: "我會主動追蹤進度，提醒大家一起完成任務。", role: "captain" },
+    { id: "q3",  text: "遇到突發狀況時，我能冷靜下來，帶動大家想辦法。", role: "captain" },
+    { id: "q4",  text: "在做決定前，我會先聽聽不同成員的意見。", role: "captain" },
 
     // 航海士
-    { id: "q6",  text: "行動前，我會先大致想過可能的結果再開始。", role: "navigator", reverse: false },
-    { id: "q7",  text: "我喜歡整理資訊或重點，幫助大家更清楚狀況。", role: "navigator", reverse: false },
-    { id: "q8",  text: "我常會思考「這樣安排是不是最有效率」。", role: "navigator", reverse: false },
-    { id: "q9n", text: "當別人很衝動時，我會提醒他們想一想後果。", role: "navigator", reverse: false },
-    { id: "q10r",text: "我通常不會花太多時間分析，大概知道就先做再說。", role: "navigator", reverse: true },
+    { id: "q5",  text: "行動前，我會先大致想過可能的結果再開始。", role: "navigator" },
+    { id: "q6",  text: "我喜歡整理資訊或重點，幫助大家更清楚狀況。", role: "navigator" },
+    { id: "q7",  text: "我常會思考「這樣安排是不是最有效率」。", role: "navigator" },
+    { id: "q8",  text: "當別人很衝動時，我會提醒他們想一想後果。", role: "navigator" },
 
     // 船醫
-    { id: "q11", text: "我會注意誰在任務中卡住，並主動詢問是否需要幫忙。", role: "medic", reverse: false },
-    { id: "q12", text: "當小組遇到困難時，我願意先處理眼前的問題，讓大家能繼續。", role: "medic", reverse: false },
-    { id: "q13", text: "我能從同學的表情或語氣，感覺出他可能需要協助。", role: "medic", reverse: false },
-    { id: "q14", text: "當氣氛低落時，我會做些實際的事幫團隊回穩（補位、整理、協助）。", role: "medic", reverse: false },
-    { id: "q15r",text: "如果別人有困難，我通常會先看情況，不太會主動出手幫忙。", role: "medic", reverse: true },
+    { id: "q9",  text: "我會注意誰在任務中卡住，並主動詢問是否需要幫忙。", role: "medic" },
+    { id: "q10", text: "當小組遇到困難時，我願意先處理眼前的問題，讓大家能繼續。", role: "medic" },
+    { id: "q11", text: "我能從同學的表情或語氣，感覺出他可能需要協助。", role: "medic" },
+    { id: "q12", text: "當氣氛低落時，我會做些實際的事幫團隊回穩（補位、整理、協助）。", role: "medic" },
 
     // 傳教士
-    { id: "q16", text: "我會思考一件事為什麼值得去做，而不是只是被要求就做。", role: "missionary", reverse: false },
-    { id: "q17", text: "當大家有點迷航時，我會提醒我們一開始的目標或初衷。", role: "missionary", reverse: false },
-    { id: "q18", text: "我對不同文化或觀點有興趣，會試著理解其中的價值。", role: "missionary", reverse: false },
-    { id: "q19", text: "當我覺得某件事有意義時，會用行動或分享影響身邊的人。", role: "missionary", reverse: false },
-    { id: "q20r",text: "我覺得只要把事情做完就好，不太需要多談目標或意義。", role: "missionary", reverse: true },
+    { id: "q13", text: "我會思考一件事為什麼值得去做，而不是只是被要求就做。", role: "missionary" },
+    { id: "q14", text: "當大家有點迷航時，我會提醒我們一開始的目標或初衷。", role: "missionary" },
+    { id: "q15", text: "我對不同文化或觀點有興趣，會試著理解其中的價值。", role: "missionary" },
+    { id: "q16", text: "當我覺得某件事有意義時，會用行動或分享影響身邊的人。", role: "missionary" },
 
     // 水手
-    { id: "q21", text: "即使任務重複或有點累，我還是會把它做完。", role: "sailor", reverse: false },
-    { id: "q22", text: "我覺得確實完成被交付的工作很重要。", role: "sailor", reverse: false },
-    { id: "q23", text: "需要耐心或體力的工作，我願意撐到最後。", role: "sailor", reverse: false },
-    { id: "q24", text: "很多時候不用別人提醒，我也會自己開始做事。", role: "sailor", reverse: false },
-    { id: "q25r",text: "有時我覺得做到差不多就好，不一定要把每個細節完成。", role: "sailor", reverse: true }
+    { id: "q17", text: "即使任務重複或有點累，我還是會把它做完。", role: "sailor" },
+    { id: "q18", text: "我覺得確實完成被交付的工作很重要。", role: "sailor" },
+    { id: "q19", text: "需要耐心或體力的工作，我願意撐到最後。", role: "sailor" },
+    { id: "q20", text: "很多時候不用別人提醒，我也會自己開始做事。", role: "sailor" }
   ];
 
   function shuffle(array) {
@@ -403,8 +397,7 @@
         alert("還有題目未作答，請確認每題都已選擇 1～5 分。");
         return null;
       }
-      const raw = Number(selected.value);
-      const score = q.reverse ? (6 - raw) : raw;
+      const score = Number(selected.value);
       roleScores[q.role].push(score);
     }
 

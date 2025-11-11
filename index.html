@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>角色特質測驗</title>
+  <title>角色特質測驗｜大航海五角色雷達圖</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -158,7 +158,7 @@
 <body>
 <header>
   <h1>角色特質測驗</h1>
-  <p>請依照剛剛小組報告任務中的實際表現作答，尋找適合自己的角色。</p>
+  <p>依照剛剛自己的表現或平時的習慣來作答，尋找適合自己的角色吧！</p>
 </header>
 
 <div class="container">
@@ -187,31 +187,32 @@
     sailor:    { label: "水手" }
   };
 
+  // 已加入反向題標記（reverse: true）
   const QUESTIONS = [
     { id: "q1",  text: "在準備報告時，我能協助分配工作，讓每個人都清楚自己的任務。", role: "captain" },
     { id: "q2",  text: "討論中出現不同意見時，我會幫大家整理想法，帶向共識。", role: "captain" },
     { id: "q3",  text: "當組員意見衝突時，我會試著安撫、協調，讓氣氛穩定下來。", role: "captain" },
-    { id: "q4",  text: "我不善於主動討論，容易等待別人的決定後再行動。", role: "captain" },
+    { id: "q4",  text: "我不善於主動討論，容易等待別人的決定後再行動。", role: "captain", reverse: true },
 
     { id: "q5",  text: "當報告內容還不清楚時，我會先整理資料，釐清重點與方向。", role: "navigator" },
     { id: "q6",  text: "我會在心中先想好整體架構，再動筆或發表意見。", role: "navigator" },
     { id: "q7",  text: "我常提出具體做法或建議，幫助小組找到更好的方法。", role: "navigator" },
-    { id: "q8",  text: "我比較少主動提出分析，通常在別人分享後才整理自己的想法。", role: "navigator" },
+    { id: "q8",  text: "我比較少主動提出分析，通常在別人分享後才整理自己的想法。", role: "navigator", reverse: true },
 
     { id: "q9",  text: "我會留意哪些組員遇到困難，主動協助他們完成任務。", role: "medic" },
     { id: "q10", text: "若有人臨時狀況（如資料出錯或遺漏），我會主動幫忙補救。", role: "medic" },
     { id: "q11", text: "我能察覺組員的壓力或情緒變化，並試著讓他們放鬆。", role: "medic" },
-    { id: "q12", text: "我通常會先顧好自己的工作，較少注意到他人的狀況。", role: "medic" },
+    { id: "q12", text: "我通常會先顧好自己的工作，較少注意到他人的狀況。", role: "medic", reverse: true },
 
     { id: "q13", text: "當大家開始懷疑能否完成時，我會鼓勵大家「我們可以做到！」", role: "missionary" },
     { id: "q14", text: "面對不同想法時，我會先理解對方的理由，再表達自己的觀點。", role: "missionary" },
     { id: "q15", text: "我能以說服或鼓舞的方式，幫助團隊接受更合適的方向。", role: "missionary" },
-    { id: "q16", text: "面對困難時，我有時會懷疑團隊是否真的能順利完成。", role: "missionary" },
+    { id: "q16", text: "面對困難時，我有時會懷疑團隊是否真的能順利完成。", role: "missionary", reverse: true },
 
     { id: "q17", text: "被分配任務後，我會照計畫一步步完成，不讓團隊擔心進度。", role: "sailor" },
     { id: "q18", text: "當任務變得困難或時間緊迫時，我會撐下去，確保成果。", role: "sailor" },
     { id: "q19", text: "即使任務內容不是我特別認同或感興趣的，我也會盡力完成。", role: "sailor" },
-    { id: "q20", text: "當別人開始行動時，我會傾向先觀望再決定要不要幫忙。", role: "sailor" }
+    { id: "q20", text: "當別人開始行動時，我會傾向先觀望再決定要不要幫忙。", role: "sailor", reverse: true }
   ];
 
   function shuffle(array) {
@@ -276,7 +277,10 @@
         alert("還有題目未作答，請確認每題都已選擇 1～5 分。");
         return null;
       }
-      const score = Number(selected.value);
+      let score = Number(selected.value);
+      if (q.reverse) {
+        score = 6 - score; // 反向題：1↔5, 2↔4, 3不變
+      }
       roleScores[q.role].push(score);
     }
 
@@ -382,7 +386,6 @@ ${scoresHtml}
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
       scales: {
         r: {
           suggestedMin: 1,
@@ -424,5 +427,3 @@ ${scoresHtml}
 
 </body>
 </html>
-
-

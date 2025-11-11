@@ -180,7 +180,6 @@ button.secondary:hover {
   padding: 6px 14px;
   border: 1.5px solid rgba(255,221,170,0.6);
 }
-
   </style>
 </head>
 <body>
@@ -203,8 +202,6 @@ button.secondary:hover {
       <button id="generateBtn">⚓ 生成我的航海雷達圖</button>
       <button type="button" class="secondary" id="resetBtn">重填問卷</button>
     </div>
-
-    
   </div>
 </div>
 
@@ -214,7 +211,7 @@ button.secondary:hover {
       🧭 航海雷達圖與分析
       <button class="close-btn" id="backBtn">返回問卷</button>
     </h2>
-        <canvas id="radarChart"></canvas>
+    <canvas id="radarChart"></canvas>
     <div class="scores" id="scoreText"></div>
     <div class="result-hint">
       ✦ 每一種角色特質，都是讓船隊真正能啟航、穿越風浪、到達目的地的重要拼圖。<br>
@@ -227,7 +224,6 @@ button.secondary:hover {
       <span>傳教士 Missionary：</span>信心、堅定、包容、同理、說服<br>
       <span>水手 Sailor：</span>堅定、毅力、熟練、執行
     </div>
-
   </div>
 </div>
 
@@ -343,93 +339,129 @@ button.secondary:hover {
     return avg;
   }
 
-  let radarChart = null;
-
+  // 新分頁顯示雷達圖與結果（不改動任何既有中文字）
   function showResultPage(avg) {
-    const overlay = document.getElementById("resultPageOverlay");
-    const ctx = document.getElementById("radarChart").getContext("2d");
-
     const labels = Object.keys(ROLE_CONFIG).map(k => ROLE_CONFIG[k].label);
     const data = Object.keys(ROLE_CONFIG).map(k => Number(avg[k].toFixed(2)));
-
-    if (radarChart) {
-      radarChart.destroy();
-      radarChart = null;
-    }
-
-    radarChart = new Chart(ctx, {
-      type: "radar",
-      data: {
-        labels: labels,
-        datasets: [{
-          label: "我的航海特質強度（1～5分）",
-          data: data,
-          fill: true,
-          backgroundColor: "rgba(255, 204, 102, 0.20)",
-          borderColor: "rgba(255, 204, 102, 1)",
-          pointBackgroundColor: "#ffcc66",
-          pointRadius: 3,
-          pointHoverRadius: 4,
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          r: {
-            suggestedMin: 1,
-            suggestedMax: 5,
-            ticks: {
-              stepSize: 1,
-              backdropColor: "transparent",
-              color: "rgba(245,245,245,0.9)",
-              font: { size: 10 }
-            },
-            grid: { color: "rgba(255,255,255,0.14)" },
-            angleLines: { color: "rgba(255,255,255,0.18)" },
-            pointLabels: {
-              color: "#ffdd99",
-              font: { size: 12 }
-            }
-          }
-        },
-        plugins: { legend: { display: false } }
-      }
-    });
-
-    const scoreBox = document.getElementById("scoreText");
     const entries = Object.entries(avg).sort((a, b) => b[1] - a[1]);
 
-    let html = "<div><strong>各角色平均分數：</strong></div>";
-    for (const [role, value] of entries) {
-      html += `<div><span class="role-label">${ROLE_CONFIG[role].label}</span>：${value.toFixed(2)} 分</div>`;
+    const scoresHtml = entries.map(
+      ([role, value]) =>
+        `<div><strong>${ROLE_CONFIG[role].label}</strong>：${value.toFixed(2)}</div>`
+    ).join("");
+
+    const labelsJson = JSON.stringify(labels);
+    const dataJson = JSON.stringify(data);
+
+    const newWin = window.open("", "_blank");
+    if (!newWin) return;
+
+    newWin.document.write(`<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>Radar Result</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    margin: 0;
+    padding: 24px 16px 32px;
+    background: radial-gradient(circle at top, #020614, #0b152e);
+    color: #f5f5f5;
+    text-align: center;
+  }
+  h1 {
+    margin: 0 0 12px;
+    font-size: 26px;
+    color: #ffdd66;
+  }
+  #radarChart {
+    max-width: 520px;
+    max-height: 520px;
+    margin: 0 auto 16px;
+  }
+  .scores {
+    font-size: 18px;
+    line-height: 1.9;
+    margin: 0 auto 12px;
+    display: inline-block;
+    text-align: left;
+    color: #ffddaa;
+  }
+  .notes {
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 10px auto 0;
+    display: inline-block;
+    text-align: left;
+    color: #ffddaa;
+    border-top: 1px dashed rgba(255,255,255,0.3);
+    padding-top: 8px;
+  }
+  .notes div {
+    margin-bottom: 2px;
+  }
+</style>
+</head>
+<body>
+<h1>🧭 Radar Chart</h1>
+<canvas id="radarChart"></canvas>
+<div class="scores">
+${scoresHtml}
+</div>
+<div class="notes">
+  <div><strong>Captain</strong>: leadership, coordination, decision, cohesion</div>
+  <div><strong>Navigator</strong>: analysis, method, reserved, suggestion</div>
+  <div><strong>Medic</strong>: care, support, response, backup</div>
+  <div><strong>Missionary</strong>: faith, persistence, inclusion, empathy, persuasion</div>
+  <div><strong>Sailor</strong>: persistence, stamina, skillful, execution</div>
+</div>
+<script>
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ${labelsJson},
+      datasets: [{
+        label: 'Score',
+        data: ${dataJson},
+        fill: true,
+        backgroundColor: 'rgba(255, 204, 102, 0.20)',
+        borderColor: 'rgba(255, 204, 102, 1)',
+        pointBackgroundColor: '#ffcc66',
+        pointRadius: 3,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          suggestedMin: 1,
+          suggestedMax: 5,
+          ticks: {
+            stepSize: 1,
+            backdropColor: 'transparent',
+            color: 'rgba(245,245,245,0.9)',
+            font: { size: 10 }
+          },
+          grid: { color: 'rgba(255,255,255,0.25)' },
+          angleLines: { color: 'rgba(255,255,255,0.25)' },
+          pointLabels: {
+            color: '#ffdd99',
+            font: { size: 13 }
+          }
+        }
+      },
+      plugins: { legend: { display: false } }
     }
-
-    const top3 = entries.slice(0, 3).map(([role]) => role);
-
-    const emoText = {
-      captain:   "你擅長看到全局並帶動大家，是團隊在迷航時的舵手與穩定核心。",
-      navigator: "你用思考和觀察幫大家找到路，是團隊安穩前進的地圖與星光。",
-      medic:     "你會注意到誰需要幫助，及時補位，是讓任務不斷線的關鍵後盾。",
-      missionary:"你在乎意義與價值，能提醒大家「為什麼出發」，替團隊點亮方向。",
-      sailor:    "你肯做、做得穩，很多成果其實靠你撐起，是最讓人放心的行動派。"
-    };
-
-    html += `<div style="margin-top:10px;"><strong>你的前三名角色力量是：</strong></div>`;
-    top3.forEach((role, idx) => {
-      const rank = idx + 1;
-      html += `<div>第${rank}名：<span class="role-label">${ROLE_CONFIG[role].label}</span>－${emoText[role]}</div>`;
-    });
-
-    html += `<div class="result-hint">
-      ✦ 記住：團隊需要的是不同特質的夥伴一起完成航程，而不是每個人都成為同一種角色。<br>
-      ✦ 你現在看到的曲線，就是你在這次大航海任務中，最獨特、最重要的貢獻。
-    </div>`;
-
-    scoreBox.innerHTML = html;
-    overlay.style.display = "block";
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+</body>
+</html>`);
+    newWin.document.close();
   }
 
   document.getElementById("generateBtn").addEventListener("click", () => {
@@ -440,11 +472,6 @@ button.secondary:hover {
 
   document.getElementById("resetBtn").addEventListener("click", () => {
     renderQuestions();
-    if (radarChart) {
-      radarChart.destroy();
-      radarChart = null;
-    }
-    document.getElementById("resultPageOverlay").style.display = "none";
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
@@ -456,5 +483,3 @@ button.secondary:hover {
 
 </body>
 </html>
-
-

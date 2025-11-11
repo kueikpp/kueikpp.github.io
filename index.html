@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>角色特質測驗｜大航海五角色雷達圖</title>
+  <title>角色特質測驗</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -404,82 +404,5 @@ button.secondary:hover {
   }
 </style>
 </head>
-<body>
-<h1>🧭 Radar Chart</h1>
-<canvas id="radarChart"></canvas>
-<div class="scores">
-${scoresHtml}
-</div>
-<div class="notes">
-  <div><strong>Captain</strong>: leadership, coordination, decision, cohesion</div>
-  <div><strong>Navigator</strong>: analysis, method, reserved, suggestion</div>
-  <div><strong>Medic</strong>: care, support, response, backup</div>
-  <div><strong>Missionary</strong>: faith, persistence, inclusion, empathy, persuasion</div>
-  <div><strong>Sailor</strong>: persistence, stamina, skillful, execution</div>
-</div>
-<script>
-  const ctx = document.getElementById('radarChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: ${labelsJson},
-      datasets: [{
-        label: 'Score',
-        data: ${dataJson},
-        fill: true,
-        backgroundColor: 'rgba(255, 204, 102, 0.20)',
-        borderColor: 'rgba(255, 204, 102, 1)',
-        pointBackgroundColor: '#ffcc66',
-        pointRadius: 3,
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        r: {
-          suggestedMin: 1,
-          suggestedMax: 5,
-          ticks: {
-            stepSize: 1,
-            backdropColor: 'transparent',
-            color: 'rgba(245,245,245,0.9)',
-            font: { size: 10 }
-          },
-          grid: { color: 'rgba(255,255,255,0.25)' },
-          angleLines: { color: 'rgba(255,255,255,0.25)' },
-          pointLabels: {
-            color: '#ffdd99',
-            font: { size: 13 }
-          }
-        }
-      },
-      plugins: { legend: { display: false } }
-    }
-  });
-</script>
-</body>
-</html>`);
-    newWin.document.close();
-  }
-
-  document.getElementById("generateBtn").addEventListener("click", () => {
-    const avg = calculateScores();
-    if (!avg) return;
-    showResultPage(avg);
-  });
-
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    renderQuestions();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
-  document.getElementById("backBtn").addEventListener("click", () => {
-    document.getElementById("resultPageOverlay").style.display = "none";
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-</script>
-
-</body>
 </html>
+

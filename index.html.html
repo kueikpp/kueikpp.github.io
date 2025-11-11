@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>角色特質測驗｜大航海五角色雷達圖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background:
+        linear-gradient(rgba(5, 10, 25, 0.7), rgba(5, 10, 25, 0.7)),
+        url("https://upload.wikimedia.org/wikipedia/commons/5/5c/John_C._Munro_off_Hong_Kong.jpg")
+        no-repeat center center fixed;
+      background-size: cover;
+      color: #f5f5f5;
+    }
+
+    header {
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: radial-gradient(circle at top left, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+      backdrop-filter: blur(6px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+      color: #ffdd66;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 13px;
+      color: #ffdd66;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 18px auto 40px;
+      padding: 0 16px 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.04), rgba(2,8,22,0.98));
+      border-radius: 18px;
+      padding: 16px 16px 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.7);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffdd88;
+    }
+
+    .subtitle {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #ffdd66;
+      line-height: 1.5;
+    }
+
+    .question-block {
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed rgba(255,255,255,0.06);
+    }
+
+    .question-text {
+      font-size: 12px;
+      margin-bottom: 3px;
+      line-height: 1.5;
+    }
+
+    .scale {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 10px;
+    }
+
+    .scale label {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 5px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .scale input[type="radio"] {
+      accent-color: #ffcc66;
+      cursor: pointer;
+      width: 11px;
+      height: 11px;
+    }
+
+    .scale label:hover {
+      background: rgba(255, 204, 102, 0.12);
+      border-color: rgba(255, 204, 102, 0.25);
+    }
+
+    .btn-area {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      background: linear-gradient(to right, #ffcc66, #ff9966);
+      color: #1a1a1a;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: all 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.55);
+    }
+
+    button.secondary {
+      background: transparent;
+      color: #ffddaa;
+      border: 1px solid rgba(255,221,170,0.35);
+      box-shadow: none;
+    }
+
+    button.secondary:hover {
+      background: rgba(255,221,170,0.08);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    .note {
+      font-size: 10px;
+      opacity: 0.8;
+      margin-top: 8px;
+      color: #ffddaa;
+    }
+
+    /* 結果頁 overlay */
+    #resultPageOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at top, rgba(3,10,25,0.9), rgba(0,0,0,0.98));
+      z-index: 999;
+      padding: 24px 12px 32px;
+      overflow-y: auto;
+    }
+
+    #resultInner {
+      max-width: 900px;
+      margin: 0 auto;
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.06), rgba(3,9,20,0.98));
+      border-radius: 20px;
+      padding: 18px 16px 20px;
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.85);
+    }
+
+    #resultInner h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      color: #ffdd88;
+    }
+
+    #radarChart {
+      max-height: 360px;
+    }
+
+    .scores {
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .role-label {
+      font-weight: 700;
+      color: #ffcc66;
+    }
+
+    .result-hint {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 10px;
+      line-height: 1.7;
+      color: #ffddaa;
+    }
+
+    .close-btn {
+      background: transparent;
+      color: #ffddaa;
+      border: 1px solid rgba(255,221,170,0.5);
+      box-shadow: none;
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+
+    .close-btn:hover {
+      background: rgba(255,221,170,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      header {
+        position: static;
+      }
+      #resultInner {
+        padding: 14px 10px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>角色特質測驗</h1>
+  <p>依照剛剛自己的表現或平時的習慣來作答，尋找適合自己的角色吧！</p>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>📝 問卷作答區</h2>
+    <div class="subtitle">
+      （1＝非常不同意，5＝非常同意） 每題請勾選一個數字。完成後按下「生成雷達圖」查看結果。
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="btn-area">
+      <button id="generateBtn">⚓ 生成我的航海雷達圖</button>
+      <button type="button" class="secondary" id="resetBtn">重填問卷</button>
+    </div>
+
+    <div class="note">
+      本測驗僅作為課程分工與自我了解參考，沒有最好或最差的角色，請以真實感受作答，也欣賞彼此不同的力量。
+    </div>
+  </div>
+</div>
+
+<!-- 結果頁 Overlay：按下生成後才出現 -->
+<div id="resultPageOverlay">
+  <div id="resultInner">
+    <h2>
+      🧭 航海雷達圖與分析
+      <button class="close-btn" id="backBtn">返回問卷</button>
+    </h2>
+    <canvas id="radarChart"></canvas>
+    <div class="scores" id="scoreText"></div>
+    <div class="result-hint">
+      ✦ 每一種角色特質，都是讓船隊真正能啟航、穿越風浪、到達目的地的重要拼圖。<br>
+      ✦ 請把你的結果當成「這次任務中，你最擅長帶來的力量」，而不是分數高低的比較。
+    </div>
+  </div>
+</div>
+
+<script>
+  const ROLE_CONFIG = {
+    captain:   { label: "船長" },
+    navigator: { label: "航海士" },
+    medic:     { label: "船醫" },
+    missionary:{ label: "傳教士" },
+    sailor:    { label: "水手" }
+  };
+
+  // 每角色 4 正向 + 1 反向
+  const QUESTIONS = [
+    // 船長
+    { id: "q1",  text: "當小組出現不同意見時，我能協助大家朝同一方向前進。", role: "captain", reverse: false },
+    { id: "q2",  text: "我會主動追蹤進度，提醒大家一起完成任務。", role: "captain", reverse: false },
+    { id: "q3",  text: "遇到突發狀況時，我能冷靜下來，帶動大家想辦法。", role: "captain", reverse: false },
+    { id: "q4",  text: "在做決定前，我會先聽聽不同成員的意見。", role: "captain", reverse: false },
+    { id: "q5r", text: "有時我比較習慣跟著團隊決定，而不太想主動提出方向。", role: "captain", reverse: true },
+
+    // 航海士
+    { id: "q6",  text: "行動前，我會先大致想過可能的結果再開始。", role: "navigator", reverse: false },
+    { id: "q7",  text: "我喜歡整理資訊或重點，幫助大家更清楚狀況。", role: "navigator", reverse: false },
+    { id: "q8",  text: "我常會思考「這樣安排是不是最有效率」。", role: "navigator", reverse: false },
+    { id: "q9n", text: "當別人很衝動時，我會提醒他們想一想後果。", role: "navigator", reverse: false },
+    { id: "q10r",text: "我通常不會花太多時間分析，大概知道就先做再說。", role: "navigator", reverse: true },
+
+    // 船醫
+    { id: "q11", text: "我會注意誰在任務中卡住，並主動詢問是否需要幫忙。", role: "medic", reverse: false },
+    { id: "q12", text: "當小組遇到困難時，我願意先處理眼前的問題，讓大家能繼續。", role: "medic", reverse: false },
+    { id: "q13", text: "我能從同學的表情或語氣，感覺出他可能需要協助。", role: "medic", reverse: false },
+    { id: "q14", text: "當氣氛低落時，我會做些實際的事幫團隊回穩（補位、整理、協助）。", role: "medic", reverse: false },
+    { id: "q15r",text: "如果別人有困難，我通常會先看情況，不太會主動出手幫忙。", role: "medic", reverse: true },
+
+    // 傳教士
+    { id: "q16", text: "我會思考一件事為什麼值得去做，而不是只是被要求就做。", role: "missionary", reverse: false },
+    { id: "q17", text: "當大家有點迷航時，我會提醒我們一開始的目標或初衷。", role: "missionary", reverse: false },
+    { id: "q18", text: "我對不同文化或觀點有興趣，會試著理解其中的價值。", role: "missionary", reverse: false },
+    { id: "q19", text: "當我覺得某件事有意義時，會用行動或分享影響身邊的人。", role: "missionary", reverse: false },
+    { id: "q20r",text: "我覺得只要把事情做完就好，不太需要多談目標或意義。", role: "missionary", reverse: true },
+
+    // 水手
+    { id: "q21", text: "即使任務重複或有點累，我還是會把它做完。", role: "sailor", reverse: false },
+    { id: "q22", text: "我覺得確實完成被交付的工作很重要。", role: "sailor", reverse: false },
+    { id: "q23", text: "需要耐心或體力的工作，我願意撐到最後。", role: "sailor", reverse: false },
+    { id: "q24", text: "很多時候不用別人提醒，我也會自己開始做事。", role: "sailor", reverse: false },
+    { id: "q25r",text: "有時我覺得做到差不多就好，不一定要把每個細節完成。", role: "sailor", reverse: true }
+  ];
+
+  function shuffle(array) {
+    const arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function renderQuestions() {
+    const container = document.getElementById("questionsContainer");
+    container.innerHTML = "";
+    const shuffled = shuffle(QUESTIONS);
+
+    shuffled.forEach((q, index) => {
+      const block = document.createElement("div");
+      block.className = "question-block";
+
+      const num = index + 1;
+      const qText = document.createElement("div");
+      qText.className = "question-text";
+      qText.textContent = `${num}. ${q.text}`;
+      block.appendChild(qText);
+
+      const scale = document.createElement("div");
+      scale.className = "scale";
+      scale.setAttribute("data-qid", q.id);
+
+      for (let v = 1; v <= 5; v++) {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = q.id;
+        input.value = v;
+        const span = document.createElement("span");
+        span.textContent = v;
+        label.appendChild(input);
+        label.appendChild(span);
+        scale.appendChild(label);
+      }
+
+      block.appendChild(scale);
+      container.appendChild(block);
+    });
+  }
+
+  renderQuestions();
+
+  function calculateScores() {
+    const roleScores = {
+      captain: [],
+      navigator: [],
+      medic: [],
+      missionary: [],
+      sailor: []
+    };
+
+    for (const q of QUESTIONS) {
+      const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+      if (!selected) {
+        alert("還有題目未作答，請確認每題都已選擇 1～5 分。");
+        return null;
+      }
+      const raw = Number(selected.value);
+      const score = q.reverse ? (6 - raw) : raw;
+      roleScores[q.role].push(score);
+    }
+
+    const avg = {};
+    for (const role in roleScores) {
+      const arr = roleScores[role];
+      const total = arr.reduce((a, b) => a + b, 0);
+      avg[role] = total / arr.length;
+    }
+    return avg;
+  }
+
+  let radarChart = null;
+
+  function showResultPage(avg) {
+    const overlay = document.getElementById("resultPageOverlay");
+    const ctx = document.getElementById("radarChart").getContext("2d");
+
+    const labels = Object.keys(ROLE_CONFIG).map(k => ROLE_CONFIG[k].label);
+    const data = Object.keys(ROLE_CONFIG).map(k => Number(avg[k].toFixed(2)));
+
+    if (radarChart) {
+      radarChart.destroy();
+      radarChart = null;
+    }
+
+    radarChart = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "我的航海特質強度（1～5分）",
+          data: data,
+          fill: true,
+          backgroundColor: "rgba(255, 204, 102, 0.20)",
+          borderColor: "rgba(255, 204, 102, 1)",
+          pointBackgroundColor: "#ffcc66",
+          pointRadius: 3,
+          pointHoverRadius: 4,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            suggestedMin: 1,
+            suggestedMax: 5,
+            ticks: {
+              stepSize: 1,
+              backdropColor: "transparent",
+              color: "rgba(245,245,245,0.9)",
+              font: { size: 10 }
+            },
+            grid: { color: "rgba(255,255,255,0.14)" },
+            angleLines: { color: "rgba(255,255,255,0.18)" },
+            pointLabels: {
+              color: "#ffdd99",
+              font: { size: 12 }
+            }
+          }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+
+    const scoreBox = document.getElementById("scoreText");
+    const entries = Object.entries(avg).sort((a, b) => b[1] - a[1]);
+
+    let html = "<div><strong>各角色平均分數：</strong></div>";
+    for (const [role, value] of entries) {
+      html += `<div><span class="role-label">${ROLE_CONFIG[role].label}</span>：${value.toFixed(2)} 分</div>`;
+    }
+
+    const top3 = entries.slice(0, 3).map(([role]) => role);
+
+    const emoText = {
+      captain:   "你擅長看到全局並帶動大家，是團隊在迷航時的舵手與穩定核心。",
+      navigator: "你用思考和觀察幫大家找到路，是團隊安穩前進的地圖與星光。",
+      medic:     "你會注意到誰需要幫助，及時補位，是讓任務不斷線的關鍵後盾。",
+      missionary:"你在乎意義與價值，能提醒大家「為什麼出發」，替團隊點亮方向。",
+      sailor:    "你肯做、做得穩，很多成果其實靠你撐起，是最讓人放心的行動派。"
+    };
+
+    html += `<div style="margin-top:10px;"><strong>你的前三名角色力量是：</strong></div>`;
+    top3.forEach((role, idx) => {
+      const rank = idx + 1;
+      html += `<div>第${rank}名：<span class="role-label">${ROLE_CONFIG[role].label}</span>－${emoText[role]}</div>`;
+    });
+
+    html += `<div class="result-hint">
+      ✦ 記住：團隊需要的是不同特質的夥伴一起完成航程，而不是每個人都成為同一種角色。<br>
+      ✦ 你現在看到的曲線，就是你在這次大航海任務中，最獨特、最重要的貢獻。
+    </div>`;
+
+    scoreBox.innerHTML = html;
+    overlay.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    const avg = calculateScores();
+    if (!avg) return;
+    showResultPage(avg);
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    renderQuestions();
+    if (radarChart) {
+      radarChart.destroy();
+      radarChart = null;
+    }
+    document.getElementById("resultPageOverlay").style.display = "none";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    document.getElementById("resultPageOverlay").style.display = "none";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>大航海五角色 × SEL 特質雷達圖測驗</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #0b2545 0%, #020816 60%, #000 100%);
+      color: #f5f5f5;
+    }
+
+    header {
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(to right, rgba(7,16,32,0.96), rgba(10,33,61,0.96));
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 13px;
+      opacity: 0.82;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 18px auto 40px;
+      padding: 0 16px 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1.2fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.04), rgba(2,8,22,0.98));
+      border-radius: 18px;
+      padding: 16px 16px 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.6);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card h3 {
+      margin: 14px 0 8px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffdd8a;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      opacity: 0.78;
+      margin-bottom: 6px;
+    }
+
+    .question {
+      margin: 6px 0 2px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .scale {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin: 0 0 5px;
+      flex-wrap: wrap;
+      font-size: 11px;
+    }
+
+    .scale label {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px 5px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .scale input[type="radio"] {
+      accent-color: #ffcc66;
+      cursor: pointer;
+      width: 12px;
+      height: 12px;
+    }
+
+    .scale label:hover {
+      background: rgba(255, 204, 102, 0.08);
+      border-color: rgba(255, 204, 102, 0.16);
+    }
+
+    .scale span.option-label {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+
+    .legend {
+      font-size: 10px;
+      opacity: 0.75;
+      margin-bottom: 4px;
+    }
+
+    .btn-area {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      background: linear-gradient(to right, #ffcc66, #ff9966);
+      color: #1a1a1a;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: all 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.55);
+    }
+
+    button.secondary {
+      background: transparent;
+      color: #ffddaa;
+      border: 1px solid rgba(255,221,170,0.35);
+      box-shadow: none;
+    }
+
+    button.secondary:hover {
+      background: rgba(255,221,170,0.06);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+    }
+
+    #chartCard h2 {
+      justify-content: space-between;
+    }
+
+    #radarChart {
+      max-height: 320px;
+    }
+
+    .scores {
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .role-label {
+      font-weight: 600;
+      color: #ffcc66;
+    }
+
+    .hint {
+      font-size: 10px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .note {
+      font-size: 10px;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      header {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>大航海五角色 × SEL 特質問卷</h1>
+  <p>完成 20 題，立刻看見你的「船長・航海士・船醫・傳教士・水手」五角雷達圖。</p>
+</header>
+
+<div class="container">
+
+  <!-- 問卷區 -->
+  <div class="card">
+    <h2>📝 問卷作答區</h2>
+    <div class="subtitle">
+      請以你在「平常小組合作、討論、完成任務」時的習慣回答。沒有好壞角色，五種力量都很重要。
+      （1＝非常不同意，5＝非常同意）
+    </div>
+
+    <div class="legend">
+      每題請勾選一個數字。完成後按下「生成雷達圖」查看結果。
+    </div>
+
+    <!-- 船長 -->
+    <h3>🧑‍✈️ 船長傾向 Leadership</h3>
+
+    <div class="question">1. 當小組出現不同意見時，我能協助大家達成共識。</div>
+    <div class="scale" data-role="captain">
+      <label><input type="radio" name="q1" value="1"><span>1</span></label>
+      <label><input type="radio" name="q1" value="2"><span>2</span></label>
+      <label><input type="radio" name="q1" value="3"><span>3</span></label>
+      <label><input type="radio" name="q1" value="4"><span>4</span></label>
+      <label><input type="radio" name="q1" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">2. 我會主動關心進度，確保任務能順利完成。</div>
+    <div class="scale" data-role="captain">
+      <label><input type="radio" name="q2" value="1"><span>1</span></label>
+      <label><input type="radio" name="q2" value="2"><span>2</span></label>
+      <label><input type="radio" name="q2" value="3"><span>3</span></label>
+      <label><input type="radio" name="q2" value="4"><span>4</span></label>
+      <label><input type="radio" name="q2" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">3. 面對壓力或突發狀況時，我能保持冷靜並帶動行動。</div>
+    <div class="scale" data-role="captain">
+      <label><input type="radio" name="q3" value="1"><span>1</span></label>
+      <label><input type="radio" name="q3" value="2"><span>2</span></label>
+      <label><input type="radio" name="q3" value="3"><span>3</span></label>
+      <label><input type="radio" name="q3" value="4"><span>4</span></label>
+      <label><input type="radio" name="q3" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">4. 我願意傾聽並整合大家的意見，再提出可行方向。</div>
+    <div class="scale" data-role="captain">
+      <label><input type="radio" name="q4" value="1"><span>1</span></label>
+      <label><input type="radio" name="q4" value="2"><span>2</span></label>
+      <label><input type="radio" name="q4" value="3"><span>3</span></label>
+      <label><input type="radio" name="q4" value="4"><span>4</span></label>
+      <label><input type="radio" name="q4" value="5"><span>5</span></label>
+    </div>
+
+    <!-- 航海士 -->
+    <h3>🧭 航海士傾向 Insight</h3>
+
+    <div class="question">5. 我習慣在行動前先觀察情況與可能的結果。</div>
+    <div class="scale" data-role="navigator">
+      <label><input type="radio" name="q5" value="1"><span>1</span></label>
+      <label><input type="radio" name="q5" value="2"><span>2</span></label>
+      <label><input type="radio" name="q5" value="3"><span>3</span></label>
+      <label><input type="radio" name="q5" value="4"><span>4</span></label>
+      <label><input type="radio" name="q5" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">6. 我喜歡找出資料或資訊之間的關聯，幫助理解全貌。</div>
+    <div class="scale" data-role="navigator">
+      <label><input type="radio" name="q6" value="1"><span>1</span></label>
+      <label><input type="radio" name="q6" value="2"><span>2</span></label>
+      <label><input type="radio" name="q6" value="3"><span>3</span></label>
+      <label><input type="radio" name="q6" value="4"><span>4</span></label>
+      <label><input type="radio" name="q6" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">7. 我常提醒自己或他人思考「這樣做會有什麼後果」。</div>
+    <div class="scale" data-role="navigator">
+      <label><input type="radio" name="q7" value="1"><span>1</span></label>
+      <label><input type="radio" name="q7" value="2"><span>2</span></label>
+      <label><input type="radio" name="q7" value="3"><span>3</span></label>
+      <label><input type="radio" name="q7" value="4"><span>4</span></label>
+      <label><input type="radio" name="q7" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">8. 我會注意任務中細節與邏輯，避免出現錯誤。</div>
+    <div class="scale" data-role="navigator">
+      <label><input type="radio" name="q8" value="1"><span>1</span></label>
+      <label><input type="radio" name="q8" value="2"><span>2</span></label>
+      <label><input type="radio" name="q8" value="3"><span>3</span></label>
+      <label><input type="radio" name="q8" value="4"><span>4</span></label>
+      <label><input type="radio" name="q8" value="5"><span>5</span></label>
+    </div>
+
+    <!-- 船醫 -->
+    <h3>🩺 船醫傾向 Support</h3>
+
+    <div class="question">9. 我會觀察任務中哪些地方需要幫忙，並主動協助。</div>
+    <div class="scale" data-role="medic">
+      <label><input type="radio" name="q9" value="1"><span>1</span></label>
+      <label><input type="radio" name="q9" value="2"><span>2</span></label>
+      <label><input type="radio" name="q9" value="3"><span>3</span></label>
+      <label><input type="radio" name="q9" value="4"><span>4</span></label>
+      <label><input type="radio" name="q9" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">10. 當小組進度受阻時，我會協助處理眼前的問題。</div>
+    <div class="scale" data-role="medic">
+      <label><input type="radio" name="q10" value="1"><span>1</span></label>
+      <label><input type="radio" name="q10" value="2"><span>2</span></label>
+      <label><input type="radio" name="q10" value="3"><span>3</span></label>
+      <label><input type="radio" name="q10" value="4"><span>4</span></label>
+      <label><input type="radio" name="q10" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">11. 我能從同學的表情或語氣看出他需要幫助。</div>
+    <div class="scale" data-role="medic">
+      <label><input type="radio" name="q11" value="1"><span>1</span></label>
+      <label><input type="radio" name="q11" value="2"><span>2</span></label>
+      <label><input type="radio" name="q11" value="3"><span>3</span></label>
+      <label><input type="radio" name="q11" value="4"><span>4</span></label>
+      <label><input type="radio" name="q11" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">12. 當團隊氣氛低落時，我會做些事讓大家重新振作（補上任務、整理資料或實際協助）。</div>
+    <div class="scale" data-role="medic">
+      <label><input type="radio" name="q12" value="1"><span>1</span></label>
+      <label><input type="radio" name="q12" value="2"><span>2</span></label>
+      <label><input type="radio" name="q12" value="3"><span>3</span></label>
+      <label><input type="radio" name="q12" value="4"><span>4</span></label>
+      <label><input type="radio" name="q12" value="5"><span>5</span></label>
+    </div>
+
+    <!-- 傳教士 -->
+    <h3>✝️ 傳教士傾向 Mission</h3>
+
+    <div class="question">13. 我會思考一件事「為什麼值得去做」，並願意與他人分享這個原因。</div>
+    <div class="scale" data-role="missionary">
+      <label><input type="radio" name="q13" value="1"><span>1</span></label>
+      <label><input type="radio" name="q13" value="2"><span>2</span></label>
+      <label><input type="radio" name="q13" value="3"><span>3</span></label>
+      <label><input type="radio" name="q13" value="4"><span>4</span></label>
+      <label><input type="radio" name="q13" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">14. 當團隊失去方向時，我會提醒大家我們最初的目標或意義。</div>
+    <div class="scale" data-role="missionary">
+      <label><input type="radio" name="q14" value="1"><span>1</span></label>
+      <label><input type="radio" name="q14" value="2"><span>2</span></label>
+      <label><input type="radio" name="q14" value="3"><span>3</span></label>
+      <label><input type="radio" name="q14" value="4"><span>4</span></label>
+      <label><input type="radio" name="q14" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">15. 我對不同文化或想法感到好奇，並從中尋找共同或值得尊重的價值。</div>
+    <div class="scale" data-role="missionary">
+      <label><input type="radio" name="q15" value="1"><span>1</span></label>
+      <label><input type="radio" name="q15" value="2"><span>2</span></label>
+      <label><input type="radio" name="q15" value="3"><span>3</span></label>
+      <label><input type="radio" name="q15" value="4"><span>4</span></label>
+      <label><input type="radio" name="q15" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">16. 當我相信某件事有價值時，我會用行動或表達讓他人也能感受到。</div>
+    <div class="scale" data-role="missionary">
+      <label><input type="radio" name="q16" value="1"><span>1</span></label>
+      <label><input type="radio" name="q16" value="2"><span>2</span></label>
+      <label><input type="radio" name="q16" value="3"><span>3</span></label>
+      <label><input type="radio" name="q16" value="4"><span>4</span></label>
+      <label><input type="radio" name="q16" value="5"><span>5</span></label>
+    </div>
+
+    <!-- 水手 -->
+    <h3>⚓ 水手傾向 Execution</h3>
+
+    <div class="question">17. 即使任務重複或耗時，我也會持續完成。</div>
+    <div class="scale" data-role="sailor">
+      <label><input type="radio" name="q17" value="1"><span>1</span></label>
+      <label><input type="radio" name="q17" value="2"><span>2</span></label>
+      <label><input type="radio" name="q17" value="3"><span>3</span></label>
+      <label><input type="radio" name="q17" value="4"><span>4</span></label>
+      <label><input type="radio" name="q17" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">18. 我覺得穩定地完成任務比一直改計畫更重要。</div>
+    <div class="scale" data-role="sailor">
+      <label><input type="radio" name="q18" value="1"><span>1</span></label>
+      <label><input type="radio" name="q18" value="2"><span>2</span></label>
+      <label><input type="radio" name="q18" value="3"><span>3</span></label>
+      <label><input type="radio" name="q18" value="4"><span>4</span></label>
+      <label><input type="radio" name="q18" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">19. 當任務需要體力、耐心或重複操作時，我願意撐到最後。</div>
+    <div class="scale" data-role="sailor">
+      <label><input type="radio" name="q19" value="1"><span>1</span></label>
+      <label><input type="radio" name="q19" value="2"><span>2</span></label>
+      <label><input type="radio" name="q19" value="3"><span>3</span></label>
+      <label><input type="radio" name="q19" value="4"><span>4</span></label>
+      <label><input type="radio" name="q19" value="5"><span>5</span></label>
+    </div>
+
+    <div class="question">20. 我會在沒人提醒的情況下，自動完成自己該做的工作。</div>
+    <div class="scale" data-role="sailor">
+      <label><input type="radio" name="q20" value="1"><span>1</span></label>
+      <label><input type="radio" name="q20" value="2"><span>2</span></label>
+      <label><input type="radio" name="q20" value="3"><span>3</span></label>
+      <label><input type="radio" name="q20" value="4"><span>4</span></label>
+      <label><input type="radio" name="q20" value="5"><span>5</span></label>
+    </div>
+
+    <div class="btn-area">
+      <button id="generateBtn">⚓ 生成我的航海雷達圖</button>
+      <button type="button" class="secondary" id="resetBtn">重填問卷</button>
+    </div>
+
+    <div class="note">
+      提醒：請依照真實情況作答，沒有「最好角色」，五種力量都是航程中重要的一部分。
+    </div>
+  </div>
+
+  <!-- 雷達圖區 -->
+  <div class="card" id="chartCard">
+    <h2>🧭 航海雷達圖與分析</h2>
+    <canvas id="radarChart"></canvas>
+    <div class="scores" id="scoreText">
+      填完問卷並按下「生成我的航海雷達圖」，這裡會顯示你的各角色分數與簡短說明。
+    </div>
+    <div class="hint">
+      雷達圖五角分別代表：船長（領導）、航海士（洞察）、船醫（支援）、傳教士（使命）、水手（實踐）。
+    </div>
+  </div>
+</div>
+
+<script>
+  // 問卷角色對應
+  const ROLE_CONFIG = {
+    captain:  { label: "船長",    color: "#ffd166" },
+    navigator:{ label: "航海士",  color: "#06d6a0" },
+    medic:    { label: "船醫",    color: "#4cc9f0" },
+    missionary:{label: "傳教士",  color: "#f72585" },
+    sailor:   { label: "水手",    color: "#9b5de5" }
+  };
+
+  // 計算分數
+  function calculateScores() {
+    const scores = {
+      captain: [],
+      navigator: [],
+      medic: [],
+      missionary: [],
+      sailor: []
+    };
+
+    // 收集所有有 data-role 的題目群組
+    document.querySelectorAll(".scale").forEach(scaleEl => {
+      const role = scaleEl.getAttribute("data-role");
+      const checked = scaleEl.querySelector("input[type='radio']:checked");
+      if (role && checked) {
+        scores[role].push(Number(checked.value));
+      }
+    });
+
+    // 檢查是否全部有作答
+    const totalAnswered = Object.values(scores).reduce((sum, arr) => sum + arr.length, 0);
+    if (totalAnswered < 20) {
+      alert("還有題目未作答，請確認每題都已選擇 1～5 分。");
+      return null;
+    }
+
+    // 算平均分
+    const avg = {};
+    for (const role in scores) {
+      const arr = scores[role];
+      const total = arr.reduce((a,b) => a + b, 0);
+      avg[role] = (total / arr.length);
+    }
+    return avg;
+  }
+
+  let radarChart = null;
+
+  function renderRadarChart(avg) {
+    const ctx = document.getElementById("radarChart").getContext("2d");
+
+    const labels = Object.keys(ROLE_CONFIG).map(key => ROLE_CONFIG[key].label);
+    const data = Object.keys(ROLE_CONFIG).map(key => Number(avg[key].toFixed(2)));
+
+    if (radarChart) {
+      radarChart.destroy();
+    }
+
+    radarChart = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "我的航海特質強度（1～5分）",
+          data: data,
+          fill: true,
+          backgroundColor: "rgba(255, 204, 102, 0.18)",
+          borderColor: "rgba(255, 204, 102, 0.95)",
+          pointBackgroundColor: "#ffcc66",
+          pointRadius: 3,
+          pointHoverRadius: 4,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            suggestedMin: 1,
+            suggestedMax: 5,
+            ticks: {
+              stepSize: 1,
+              backdropColor: "transparent",
+              color: "rgba(245,245,245,0.75)",
+              font: { size: 9 }
+            },
+            grid: {
+              color: "rgba(255,255,255,0.12)"
+            },
+            angleLines: {
+              color: "rgba(255,255,255,0.15)"
+            },
+            pointLabels: {
+              color: "#ffdd99",
+              font: { size: 11 }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // 顯示文字解讀
+    const scoreBox = document.getElementById("scoreText");
+    let html = "";
+    const sorted = Object.entries(avg).sort((a,b) => b[1] - a[1]);
+
+    for (const [role, value] of Object.entries(avg)) {
+      const info = ROLE_CONFIG[role];
+      html += `<div><span class="role-label">${info.label}</span>：${value.toFixed(2)} 分</div>`;
+    }
+
+    const topRole = sorted[0][0];
+    const topInfo = {
+      captain:  "你在帶領方向、整合意見上有明顯優勢，很適合擔任船長或核心決策角色。",
+      navigator:"你善於觀察與分析，適合擔任規劃路線、設計策略的航海士。",
+      medic:    "你擅長支援與補位，能照顧任務進行的細節，是穩定團隊的重要船醫。",
+      missionary:"你重視意義與價值，會影響團隊的精神氣氛，像是一位傳達理念的傳教士。",
+      sailor:   "你可靠、肯做事、能撐到底，是讓整艘船真正前進的關鍵水手。"
+    }[topRole];
+
+    html += `<div class="hint" style="margin-top:4px;">五項中最高的是：<span class="role-label">${ROLE_CONFIG[topRole].label}</span>。${topInfo}</div>`;
+    scoreBox.innerHTML = html;
+  }
+
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    const avg = calculateScores();
+    if (!avg) return;
+    renderRadarChart(avg);
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    document.querySelectorAll("input[type='radio']").forEach(i => i.checked = false);
+    if (radarChart) {
+      radarChart.destroy();
+      radarChart = null;
+    }
+    document.getElementById("scoreText").textContent =
+      "填完問卷並按下「生成我的航海雷達圖」，這裡會顯示你的各角色分數與簡短說明。";
+  });
+</script>
+
+</body>
+</html>
